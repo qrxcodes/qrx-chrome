@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22.x'
+
+jobs:
+  build:
+    name: Lint, type-check, test and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build extension (store build, qrx.codes)
+        run: npm run build:extension
+        env:
+          EXTENSION_VERSION: 1.0.${{ github.run_number }}
+          QRX_OAUTH_CLIENT_ID: ${{ vars.QRX_OAUTH_CLIENT_ID_PROD }}
+
+      - name: Zip extension
+        run: npm run zip
+
+      - name: Build extension (dev build, dev.qrx.codes)
+        run: npm run build:extension:dev
+        env:
+          EXTENSION_VERSION: 1.0.${{ github.run_number }}
+
+      - name: Zip dev extension
+        run: npm run zip
+        env:
+          ZIP_SOURCE: dist/extension-dev
+
+      - name: Upload store package
+        uses: actions/upload-artifact@v4
+        with:
+          name: qrx-extension-1.0.${{ github.run_number }}
+          path: release/qrx-extension-1.0.${{ github.run_number }}.zip
+          retention-days: 30
+
+      - name: Upload dev package
+        uses: actions/upload-artifact@v4
+        with:
+          name: qrx-extension-1.0.${{ github.run_number }}-dev
+          path: release/qrx-extension-1.0.${{ github.run_number }}-dev.zip
+          retention-days: 14
+
+  smoke:
+    name: Load the build in Chromium
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build dev extension
+        run: npm run build:extension:dev
+
+      # Loads the unpacked build, checks the fixed ID, the redirect URI, the signed-out popup and that the sign-in
+      # window opens on the right authorisation request. No API key in CI, so it stops before the signed-in checks.
+      - name: Smoke test
+        run: npm run test:e2e
+
+      - name: Upload smoke-test screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-screenshots-${{ github.run_number }}
+          path: test-results/e2e/
+          retention-days: 14

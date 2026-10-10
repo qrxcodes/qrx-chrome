@@ -1,0 +1,19 @@
+node_modules/
+dist/
+release/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+*.tsbuildinfo
+
+# Generated icons
+extension/icons/
+
+# Local test output
+test-results/
+.playwright/
+
+# Private keys never belong in the repo
+*.pem
