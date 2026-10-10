@@ -22,10 +22,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -65,14 +65,14 @@ jobs:
           ZIP_SOURCE: dist/extension-dev
 
       - name: Upload store package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: qrx-extension-1.0.${{ github.run_number }}
           path: release/qrx-extension-1.0.${{ github.run_number }}.zip
           retention-days: 30
 
       - name: Upload dev package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: qrx-extension-1.0.${{ github.run_number }}-dev
           path: release/qrx-extension-1.0.${{ github.run_number }}-dev.zip
@@ -85,10 +85,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -109,7 +109,7 @@ jobs:
 
       - name: Upload smoke-test screenshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: smoke-screenshots-${{ github.run_number }}
           path: test-results/e2e/
