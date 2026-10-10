@@ -13,7 +13,7 @@ import {
   setFinishedHandler,
 } from './lib/jobs';
 import type { Message, Reply, RequestType, Requests } from './lib/messages';
-import { toProblem } from './lib/problem';
+import { describeProblem, toProblem } from './lib/problem';
 import { getStored, setStored } from './lib/storage';
 import type { Job, Style } from './lib/types';
 
@@ -68,7 +68,11 @@ async function notifyFinished(job: Job) {
     type: 'basic',
     iconUrl,
     title: succeeded ? 'Your QR code is ready' : "Your QR code didn't work out",
-    message: succeeded ? shorten(job.request.prompt) : (job.problem?.detail ?? 'Open QRX to try again.'),
+    message: succeeded
+      ? shorten(job.request.prompt)
+      : job.problem
+        ? describeProblem(job.problem).detail
+        : 'Open QRX to try again.',
     contextMessage: succeeded ? link : undefined,
     priority: 1,
   });

@@ -1,3 +1,4 @@
+import { links } from '../config';
 import { describeProblem } from '../lib/problem';
 import type { Code, Job } from '../lib/types';
 import { copyImage, copyText, downloadImage } from '../ui/clipboard';
@@ -78,10 +79,16 @@ export function CodeView({ job, code: givenCode, onToast, onAnother, onRetry, on
         <p className="prompt-line">{prompt}</p>
         <p className="meta-line">{displayLink(destination)}</p>
         <div className="button-row">
-          {onRetry && (
-            <button className="button primary" onClick={onRetry}>
-              Try again
-            </button>
+          {job?.problem?.type === 'daily-limit' ? (
+            <a className="button primary" href={links.home} target="_blank" rel="noreferrer">
+              Open qrx.codes
+            </a>
+          ) : (
+            onRetry && (
+              <button className="button primary" onClick={onRetry}>
+                Try again
+              </button>
+            )
           )}
           {onEdit && (
             <button className="button" onClick={onEdit}>
