@@ -56,7 +56,8 @@ Regenerate the images with `npm run screenshots` and `npm run store:assets` (see
 
 1. Open [Partner Center → Microsoft Edge](https://partner.microsoft.com/dashboard/microsoftedge/overview) with the
    account that will own QRX on Edge (a free developer registration; company verification can take a while, so start
-   it early).
+   it early). If the account isn't enrolled in the Edge program yet, enrol through **Account settings → Programs** in
+   Partner Center; the direct enrolment link answers "We don't recognize the program".
 2. **Create new extension**, upload the same zip. Note the extension ID Partner Center shows for it: the redirect URI is
    `https://<edge-extension-id>.chromiumapp.org/`. Edge uses the same `chromiumapp.org` redirect form as Chrome (checked
    with Edge 155: `chrome.identity.getRedirectURL()` returns `https://<id>.chromiumapp.org/`, and the sign-in window
