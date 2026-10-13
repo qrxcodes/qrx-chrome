@@ -145,14 +145,13 @@ QRX makes an artistic QR code for the page you are on.
 
 To test:
 1. Pin the QRX extension and open any web page (for example https://qrx.codes/developers).
-2. Click the QRX button and choose "Sign in to QRX". Sign in with the test account below (or create a free account in the sign-in window). Approve access when asked.
+2. Click the QRX button and choose "Sign in to QRX". Sign in with the test account below. Approve access when asked.
 3. The popup shows the page's address as the link. Type a picture description (for example "a watercolour lighthouse at dawn"), pick a style, and click "Create QR code".
 4. The code takes about a minute. You can close the popup; a notification says when it is ready. Click it (or reopen the popup) to see the image, its qrx.to short link, and Copy link / Copy image / Download PNG.
 
-Test account: {{REVIEWER_EMAIL}} / {{REVIEWER_PASSWORD}}
-Alternative without signing in: open the extension's settings (gear icon), paste this API key and click "Save key": {{REVIEWER_API_KEY}}
-
-The free account has a small daily allowance of codes; if it runs out, the popup says so.
+Test account: username {{REVIEWER_USERNAME}} (email {{REVIEWER_EMAIL}}) / password {{REVIEWER_PASSWORD}}
 ```
 
-Fill the placeholders from the reviewer credentials (the free `qrx-reviewer` account); never commit them.
+Each store has its own reviewer account, so its usage shows separately: `qrx-chrome-review` (`chrome-review@qrx.codes`)
+for Chrome and `qrx-edge-review` (`edge-review@qrx.codes`) for Edge, both with the paid flag. The passwords are in the
+team vault ("QRX Chrome reviewer", "QRX Edge reviewer"); never commit them.

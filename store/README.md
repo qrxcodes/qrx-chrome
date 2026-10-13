@@ -1,7 +1,8 @@
 # Store listing pack
 
 Everything needed to publish QRX in the Chrome Web Store (under MakerX's existing publisher account) and in Microsoft
-Edge Add-ons (Partner Center). The same zip goes to both stores.
+Edge Add-ons (Partner Center). Each store gets its own zip: the two builds differ only in the OAuth client, so the
+sign-in consent screen names the browser the extension came from.
 
 | File                                                       | What                                                                          |
 | ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -22,8 +23,9 @@ Regenerate the images with `npm run screenshots` and `npm run store:assets` (see
    `"resource": "https://qrx.codes/v1"`. Until then, sign-in on the store build fails at the API.
 2. **Privacy policy:** add the section in `privacy-policy-addition.md` to https://qrx.codes/privacy, so the policy
    describes the same three kinds of data the store forms declare.
-3. **Package:** take `qrx-extension-<version>.zip` from the latest green CI run on `main` (Actions → CI → artifacts), or
-   build it locally with `npm run package` (`release/`). It is the store build: qrx.codes only, no manifest `key`.
+3. **Package:** take the zips from the latest green CI run on `main` (Actions → CI → artifacts):
+   `qrx-extension-<version>.zip` for Chrome and `qrx-extension-<version>-edge.zip` for Edge. Both are store builds:
+   qrx.codes only, no manifest `key`.
 
 ## Publish on Chrome (MakerX publisher account)
 
@@ -32,16 +34,17 @@ Regenerate the images with `npm run screenshots` and `npm run store:assets` (see
    that account.)
 2. **Items → New item**, upload the zip. Don't submit yet. Copy the new item's ID from the dashboard URL or the item
    page: the extension's sign-in redirect URI is `https://<chrome-item-id>.chromiumapp.org/`.
-3. Do steps 1–2 of the Edge section below, so both store IDs are known.
-4. **Prod Clerk OAuth app** (clerk.qrx.codes dashboard → Configure → OAuth applications → Add):
+3. **Prod Clerk OAuth app** (clerk.qrx.codes dashboard → Configure → OAuth applications → Add):
    - Name **QRX for Chrome**, public client (no secret), PKCE required, consent screen on.
    - Scopes `qrx:read qrx:generate offline_access`.
-   - Redirect URIs: `https://<chrome-item-id>.chromiumapp.org/` and `https://<edge-extension-id>.chromiumapp.org/`.
+   - Redirect URI: `https://<chrome-item-id>.chromiumapp.org/`.
    - Copy its **client ID** into the GitHub repo variable `QRX_OAUTH_CLIENT_ID_PROD` (Settings → Secrets and
      variables → Actions → Variables). It is public, not a secret.
    - Re-run CI on `main` and take the new zip. (Without a client ID the extension still signs in, by registering itself
      with Clerk on each install; the pre-registered app keeps the consent screen consistent and the Clerk app list
      clean.)
+4. Reviewer account: `qrx-chrome-review` (`chrome-review@qrx.codes`) in prod Clerk, public metadata
+   `{"isPaid": true}`, password in the team vault as "QRX Chrome reviewer".
 5. On the item, **Package → Upload new package** with the new zip.
 6. **Store listing** tab: fill the fields from `listing.md` (Chrome column), upload the icon, screenshots, small promo
    tile and marquee.
@@ -58,11 +61,15 @@ Regenerate the images with `npm run screenshots` and `npm run store:assets` (see
    account that will own QRX on Edge (a free developer registration; company verification can take a while, so start
    it early). If the account isn't enrolled in the Edge program yet, enrol through **Account settings → Programs** in
    Partner Center; the direct enrolment link answers "We don't recognize the program".
-2. **Create new extension**, upload the same zip. Note the extension ID Partner Center shows for it: the redirect URI is
+2. **Create new extension**, upload the Edge zip. Note the extension ID Partner Center shows for it: the redirect URI is
    `https://<edge-extension-id>.chromiumapp.org/`. Edge uses the same `chromiumapp.org` redirect form as Chrome (checked
    with Edge 155: `chrome.identity.getRedirectURL()` returns `https://<id>.chromiumapp.org/`, and the sign-in window
-   opens and reaches QRX's sign-in page), so the only difference is the ID. Add it to the Clerk app (Chrome step 4).
-3. Once the zip with the client ID exists (Chrome step 4), **Packages → Replace** with it.
+   opens and reaches QRX's sign-in page), so the only difference is the ID.
+3. **Prod Clerk OAuth app** **QRX for Edge**, set up like QRX for Chrome (Chrome step 3) with the redirect URI
+   `https://<edge-extension-id>.chromiumapp.org/`. Its client ID goes in the repo variable
+   `QRX_OAUTH_CLIENT_ID_EDGE_PROD`; re-run CI on `main` and **Packages → Replace** with `qrx-extension-<version>-edge.zip`.
+   Reviewer account: `qrx-edge-review` (`edge-review@qrx.codes`), public metadata `{"isPaid": true}`, vault entry
+   "QRX Edge reviewer".
 4. **Availability:** Public; all markets.
 5. **Properties:** category, privacy policy URL (the extension handles personal information: yes), website, support
    URL, mature content (no), from `listing.md` (Edge column).
@@ -73,5 +80,5 @@ Regenerate the images with `npm run screenshots` and `npm run store:assets` (see
 
 ## Updates
 
-Bump `version` in `manifest.json` (CI also stamps `1.0.<run number>`), take the CI zip, and upload it as a new package
-in both dashboards. The extension IDs, and so the Clerk redirect URIs, never change.
+Bump `version` in `manifest.json` (CI also stamps `1.0.<run number>`), take the CI zip, and upload each store's zip as a new
+package in its dashboard. The extension IDs, and so the Clerk redirect URIs, never change.

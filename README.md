@@ -58,8 +58,8 @@ npm run build:extension:dev    # dev build, against dev.qrx.codes -> dist/extens
 
 Pin QRX to the toolbar, open any web page and click the QRX button.
 
-To package for the stores: `npm run package` writes `release/qrx-extension-<version>.zip`. CI builds the same zip on
-every push (see the workflow's artifacts).
+To package for the stores: `npm run package` writes `release/qrx-extension-<version>.zip`. CI builds a Chrome zip and
+an Edge zip (`-edge`, with the Edge OAuth client) on every push (see the workflow's artifacts).
 
 ## Development
 
@@ -73,12 +73,12 @@ npm run test:e2e        # loads the dev build in Playwright's Chromium (see belo
 
 ### Build settings
 
-| Variable              | Default                                          | Use                                                                                                                               |
-| --------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `QRX_ENV`             | `prod`                                           | `dev` builds against dev.qrx.codes and the dev sign-in service; set by the npm scripts.                                           |
-| `QRX_OAUTH_CLIENT_ID` | per environment, in `build.config.ts`            | The pre-registered public OAuth client. With none, the extension registers itself on first sign-in (dynamic client registration). |
-| `QRX_MANIFEST_KEY`    | dev key for dev builds, none for the store build | Fixes the extension ID. The stores assign their own IDs to the store build.                                                       |
-| `EXTENSION_VERSION`   | `manifest.json`                                  | CI sets `1.0.<run number>`.                                                                                                       |
+| Variable              | Default                                          | Use                                                                                                                                                                                                                               |
+| --------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `QRX_ENV`             | `prod`                                           | `dev` builds against dev.qrx.codes and the dev sign-in service; set by the npm scripts.                                                                                                                                           |
+| `QRX_OAUTH_CLIENT_ID` | per environment, in `build.config.ts`            | The pre-registered public OAuth client. CI builds Chrome with `QRX_OAUTH_CLIENT_ID_PROD` and Edge with `QRX_OAUTH_CLIENT_ID_EDGE_PROD`. With none, the extension registers itself on first sign-in (dynamic client registration). |
+| `QRX_MANIFEST_KEY`    | dev key for dev builds, none for the store build | Fixes the extension ID. The stores assign their own IDs to the store build.                                                                                                                                                       |
+| `EXTENSION_VERSION`   | `manifest.json`                                  | CI sets `1.0.<run number>`.                                                                                                                                                                                                       |
 
 The unpacked dev build always has the ID `bcpkdmcioonkndjhpfogabejhemhahge`, so its sign-in redirect URI is
 `https://bcpkdmcioonkndjhpfogabejhemhahge.chromiumapp.org/` in both Chrome and Edge. The options page shows the redirect

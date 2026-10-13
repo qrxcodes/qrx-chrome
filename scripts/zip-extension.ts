@@ -1,7 +1,9 @@
 /**
- * Zips a built extension for upload: the same file goes to the Chrome Web Store and to Edge Add-ons.
+ * Zips a built extension for upload. Chrome and Edge get separate store builds that differ only in the OAuth client,
+ * so each store's sign-in consent screen names its own browser.
  *
- *   npm run build:extension && npm run zip          -> release/qrx-extension-<version>.zip
+ *   npm run build:extension && npm run zip          -> release/qrx-extension-<version>.zip (Chrome Web Store)
+ *   ... && ZIP_SUFFIX=edge npm run zip              -> release/qrx-extension-<version>-edge.zip (Edge Add-ons)
  *   ZIP_SOURCE=dist/extension-dev npm run zip       -> release/qrx-extension-<version>-dev.zip
  */
 import archiver from 'archiver';
@@ -24,7 +26,8 @@ if (!isDev && manifest.key) {
 
 const outDir = path.resolve('release');
 fs.mkdirSync(outDir, { recursive: true });
-const outFile = path.join(outDir, `qrx-extension-${manifest.version}${isDev ? '-dev' : ''}.zip`);
+const suffix = isDev ? 'dev' : process.env.ZIP_SUFFIX;
+const outFile = path.join(outDir, `qrx-extension-${manifest.version}${suffix ? `-${suffix}` : ''}.zip`);
 const output = fs.createWriteStream(outFile);
 const archive = archiver('zip', { zlib: { level: 9 } });
 
